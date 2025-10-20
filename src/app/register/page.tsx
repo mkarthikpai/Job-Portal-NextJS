@@ -1,6 +1,7 @@
 "use client";
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import Link from "next/link";
+import { registrationAction } from "./registrationAction.action";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -49,13 +50,6 @@ const Registration: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
-    try {
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -68,7 +62,7 @@ const Registration: React.FC = () => {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form action={registrationAction} className="space-y-6">
             {/* Name Field */}
             <div className="space-y-2">
               <Label htmlFor="name">Full Name *</Label>
@@ -77,6 +71,7 @@ const Registration: React.FC = () => {
                 <Input
                   id="name"
                   type="text"
+                  name="name"
                   placeholder="Enter your full name"
                   required
                   value={formData.name}
@@ -96,6 +91,7 @@ const Registration: React.FC = () => {
                 <Input
                   id="userName"
                   type="text"
+                  name="userName"
                   placeholder="Choose a username"
                   required
                   value={formData.userName}
@@ -115,6 +111,7 @@ const Registration: React.FC = () => {
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="Enter your email"
                   required
                   value={formData.email}
@@ -130,6 +127,7 @@ const Registration: React.FC = () => {
             <div className="space-y-2 w-full">
               <Label htmlFor="role">I am a *</Label>
               <Select
+                name="role"
                 value={formData.role}
                 onValueChange={(value: "applicant" | "employer") =>
                   handleInputChange("role", value)
@@ -152,6 +150,7 @@ const Registration: React.FC = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
                   required
@@ -185,6 +184,7 @@ const Registration: React.FC = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="confirmPassword"
+                  name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   required
