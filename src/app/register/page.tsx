@@ -50,6 +50,20 @@ const Registration: React.FC = () => {
     }));
   };
 
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const registrationData = {
+      name: formData?.name.trim(),
+      userName: formData?.userName.trim(),
+      email: formData?.email.toLowerCase().trim(),
+      password: formData?.password,
+      role: formData?.role,
+    };
+
+    await registrationAction(registrationData);
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -62,7 +76,7 @@ const Registration: React.FC = () => {
         </CardHeader>
 
         <CardContent>
-          <form action={registrationAction} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
             <div className="space-y-2">
               <Label htmlFor="name">Full Name *</Label>
