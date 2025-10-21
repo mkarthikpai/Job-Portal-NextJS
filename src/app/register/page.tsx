@@ -21,6 +21,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Lock, Mail, User, UserCheck } from "lucide-react";
+import { toast } from "sonner";
 
 interface RegistrationFormData {
   name: string;
@@ -62,9 +63,11 @@ const Registration: React.FC = () => {
     };
 
     if (formData.password !== formData.confirmPassword)
-      return alert("Password are not matching");
+      return toast.warning("Password are not matching");
 
-    await registrationAction(registrationData);
+    const result = await registrationAction(registrationData);
+    if (result.status === "SUCCESS") toast.success(result.message);
+    else toast.error(result.message);
   };
 
   return (

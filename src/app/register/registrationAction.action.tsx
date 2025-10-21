@@ -11,15 +11,26 @@ export const registrationAction = async (data: {
   password: string;
   role: "applicant" | "employer";
 }) => {
-  //   console.log(formData.get("name"));
-  //   console.log(Object.fromEntries(formData.entries()));
-  const { name, userName, email, password, role } = data;
+  try {
+    //   console.log(formData.get("name"));
+    //   console.log(Object.fromEntries(formData.entries()));
+    const { name, userName, email, password, role } = data;
 
-  // Hashing Password
-  const hashPassword = await argon2.hash(password);
+    // Hashing Password
+    const hashPassword = await argon2.hash(password);
 
-  // Inserting To DB
-  await db
-    .insert(users)
-    .values({ name, userName, email, password: hashPassword, role });
+    // Inserting To DB
+    await db
+      .insert(users)
+      .values({ name, userName, email, password: hashPassword, role });
+    return {
+      status: "SUCCESS",
+      message: "Registration Completed Successfully",
+    };
+  } catch (error) {
+    return {
+      status: "ERROR",
+      message: "Unknown Error Occured!, Please Try Again",
+    };
+  }
 };
