@@ -1,7 +1,7 @@
 "use client";
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import Link from "next/link";
-import { registrationAction } from "./registrationAction.action";
+import { registrationAction } from "../../features/auth/server/auth.actions";
 
 import { Input } from "@/components/ui/input";
 import {

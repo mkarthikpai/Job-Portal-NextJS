@@ -46,3 +46,36 @@ export const registrationAction = async (data: {
     };
   }
 };
+
+export const loginUserAction = async (data: {
+  email: string;
+  password: string;
+}) => {
+  try {
+    const { email, password } = data;
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+
+    if (!user) {
+      return { status: "ERROR", message: "Invalid Email Or Password" };
+    }
+
+    const isValidPassword = await argon2.verify(user.password, password);
+
+    if (!isValidPassword) {
+      return {
+        status: "ERROR",
+        message: "Invalid Email Or Password",
+      };
+    }
+
+    return {
+      status: "SUCCESS",
+      message: "Login Successful!",
+    };
+  } catch (error) {
+    return {
+      status: "ERROR",
+      message: "Unknown Error Occured!, Please Try Again",
+    };
+  }
+};

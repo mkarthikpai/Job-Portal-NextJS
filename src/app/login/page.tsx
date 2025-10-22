@@ -1,7 +1,7 @@
 "use client";
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import Link from "next/link";
-
+import { loginUserAction } from "../../features/auth/server/auth.actions";
 import { Input } from "@/components/ui/input";
 
 import {
@@ -14,6 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Lock, Mail, UserCheck } from "lucide-react";
+import { toast } from "sonner";
 
 interface LoginFormData {
   email: string;
@@ -34,8 +35,17 @@ const Login: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     try {
+      const loginData = {
+        email: formData?.email.toLowerCase().trim(),
+        password: formData?.password,
+      };
+
+      const result = await loginUserAction(loginData);
+      if (result.status === "SUCCESS") toast.success(result.message);
+      else toast.error(result.message);
     } catch (error) {
       console.log(error);
     }
@@ -64,6 +74,7 @@ const Login: React.FC = () => {
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="Enter your email"
                   required
                   value={formData.email}
@@ -82,6 +93,7 @@ const Login: React.FC = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   required
