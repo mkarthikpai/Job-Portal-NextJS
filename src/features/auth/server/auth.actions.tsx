@@ -10,6 +10,7 @@ import {
   RegisterUserData,
   registerUserSchema,
 } from "../auth.schema";
+import { createSessionAndSetCookies } from "./use-cases/sessions";
 
 export const registrationAction = async (data: RegisterUserData) => {
   try {
@@ -34,9 +35,14 @@ export const registrationAction = async (data: RegisterUserData) => {
     const hashPassword = await argon2.hash(password);
 
     // Inserting To DB
-    await db
+    const [result] = await db
       .insert(users)
       .values({ name, userName, email, password: hashPassword, role });
+
+    console.log(result);
+
+    await createSessionAndSetCookies(result.insertId);
+
     return {
       status: "SUCCESS",
       message: "Registration Completed Successfully",
@@ -70,6 +76,8 @@ export const loginUserAction = async (data: LoginUserData) => {
         message: "Invalid Email Or Password",
       };
     }
+
+    await createSessionAndSetCookies(user.id);
 
     return {
       status: "SUCCESS",
