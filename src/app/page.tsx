@@ -1,7 +1,10 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { getCurrentUser } from "@/features/auth/server/auth.queries";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+  console.log("User Data", user);
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -15,7 +18,7 @@ export default function Home() {
         />
         <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
           <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
+            Get started by editing {user?.name}
             <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
               src/app/page.tsx
             </code>
