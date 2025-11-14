@@ -1,10 +1,10 @@
-import { logoutUserAction } from "@/features/auth/server/auth.actions";
+import { getCurrentUser } from "@/features/auth/server/auth.queries";
 
-const EmployerDashboard = () => {
+const EmployerDashboard = async () => {
+  const user = await getCurrentUser();
   return (
     <div>
-      <h1>Welcome, Employer</h1>
-      <button onClick={logoutUserAction}>Logout</button>
+      <h1>Welcome, {user?.name}</h1>
     </div>
   );
 };

@@ -15,6 +15,13 @@
       "when": 1760927244562,
       "tag": "0001_sleepy_purple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1763085357244,
+      "tag": "0002_jittery_doctor_doom",
+      "breakpoints": true
     }
   ]
 }
