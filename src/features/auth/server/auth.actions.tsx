@@ -18,12 +18,23 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import crypto from "crypto";
 
-export const registrationAction = async (data: RegisterUserData) => {
+// 👉 Server Actions in Next.js are special functions that run only on the server, not in the user’s browser.
+
+// They let you perform things like database queries, API calls, form submissions, or data mutations directly from your React components — without creating a separate API route.
+
+// You just mark a function with "use server", and Next.js automatically runs it on the server.
+
+//*When you submit a <form> in Next.js using action={yourServerAction}, the framework sends a FormData object to that server function.
+
+// FormData is a built-in Web API type (just like Request, Response, or URLSearchParams).
+
+// It provides methods like .get(), .set(), .append(), and .entries() — which you’re already using here.
+
+export const registerUserAction = async (data: RegisterUserData) => {
   try {
-    //   console.log(formData.get("name"));
-    //   console.log(Object.fromEntries(formData.entries()));
     const { data: validatedData, error } = registerUserSchema.safeParse(data);
     if (error) return { status: "ERROR", message: error.issues[0].message };
+    // console.log(formData.get("name"));
     const { name, userName, email, password, role } = validatedData;
 
     const [user] = await db
@@ -32,16 +43,18 @@ export const registrationAction = async (data: RegisterUserData) => {
       .where(or(eq(users.email, email), eq(users.userName, userName)));
 
     if (user) {
-      if (user.email === email) {
+      if (user.email === email)
         return { status: "ERROR", message: "Email Already Exists" };
-      } else return { status: "ERROR", message: "Username Already Exists" };
+      else
+        return {
+          status: "ERROR",
+          message: "UseName Already Exists",
+        };
     }
 
-    // Hashing Password
     const hashPassword = await argon2.hash(password);
 
     await db.transaction(async (tx) => {
-      // Inserting To DB
       const [result] = await tx
         .insert(users)
         .values({ name, userName, email, password: hashPassword, role });
@@ -64,10 +77,15 @@ export const registrationAction = async (data: RegisterUserData) => {
   } catch (error) {
     return {
       status: "ERROR",
-      message: "Unknown Error Occured!, Please Try Again",
+      message: "Unknown Error Occurred! Please Try Again Later",
     };
   }
 };
+
+// type LoginData = {
+//   email: string;
+//   password: string;
+// };
 
 export const loginUserAction = async (data: LoginUserData) => {
   try {
