@@ -1,10 +1,14 @@
 import { getCurrentUser } from "@/features/auth/server/auth.queries";
+import { EmployerProfileCompletionStatus } from "@/features/employers/components/employer-profile-status";
 import { StatsCards } from "@/features/employers/components/employer-stats";
 import { redirect } from "next/navigation";
 
 const EmployerDashboard = async () => {
   const user = await getCurrentUser();
+  console.log("user data employer: ", user);
+
   if (!user) return redirect("/login");
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -19,8 +23,9 @@ const EmployerDashboard = async () => {
 
       {/* Stats Cards */}
       <StatsCards />
+
+      <EmployerProfileCompletionStatus />
     </div>
   );
 };
-
 export default EmployerDashboard;

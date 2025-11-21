@@ -1,10 +1,11 @@
 import { cookies, headers } from "next/headers";
 import crypto from "crypto";
 import { getIPAddress } from "./location";
-import { db } from "@/config/db";
 import { sessions, users } from "@/drizzle/schema";
+import { db } from "@/config/db";
 import { SESSION_LIFETIME, SESSION_REFRESH_TIME } from "@/config/constant";
 import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 type CreateSessionData = {
   userAgent: string;
@@ -31,6 +32,7 @@ const createUserSession = async ({
   tx = db,
 }: CreateSessionData) => {
   const hashedToken = crypto.createHash("sha-256").update(token).digest("hex");
+
   const [session] = await tx.insert(sessions).values({
     id: hashedToken,
     userId,
@@ -38,9 +40,11 @@ const createUserSession = async ({
     ip,
     userAgent,
   });
+
   return session;
 };
 
+// Give me the type of the first parameter of the callback inside db.transaction — that's the tx object
 type DbClient = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 export const createSessionAndSetCookies = async (
@@ -52,7 +56,7 @@ export const createSessionAndSetCookies = async (
   const headersList = await headers();
 
   await createUserSession({
-    token: token,
+    token,
     userId: userId,
     userAgent: headersList.get("user-agent") || "",
     ip: ip,
