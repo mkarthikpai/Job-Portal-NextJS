@@ -3,10 +3,54 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Building2, Calendar, FileText, Globe, MapPin } from "lucide-react";
+import {
+  Briefcase,
+  Building2,
+  Calendar,
+  FileText,
+  Globe,
+  MapPin,
+} from "lucide-react";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+
+const organizationTypeOptions = [
+  "development",
+  "business",
+  "design",
+  "android dev",
+  "cloud business",
+] as const;
+type OrganizationType = (typeof organizationTypeOptions)[number];
+
+const teamSizeOptions = ["1-5", "6-20", "21-50"] as const;
+type TeamSize = (typeof teamSizeOptions)[number];
+
+// Without as const, TypeScript thinks options is just a generic list of strings (string[]). With as const, TypeScript treats it as a Read-Only Tuple. It knows exactly that:
+
+// Index 0 is "development"
+
+// Index 1 is "business"
+
+// Index 2 is "design"
+
+// Nothing else is allowed.
+
+// Imagine a Vending Machine (The Array).
+
+// typeof Machine: Describes the whole machine.
+
+// typeof Machine[0]: Describes only the chips in the first slot.
+
+// typeof Machine[number]: Describes anything that could possibly come out of that machine.
 
 interface IformInput {
   username: string;
@@ -16,12 +60,12 @@ interface IformInput {
   yearOfEstablishment: string;
   location: string;
   websiteUrl: string;
-  //   organizationType: OrganizationType;
-  //   teamSize: TeamSize;
+  organizationType: OrganizationType;
+  teamSize: TeamSize;
 }
 
 const EmployerSettingsForm = () => {
-  const { register, handleSubmit } = useForm<IformInput>();
+  const { register, handleSubmit, control } = useForm<IformInput>();
 
   const handleFormSubmit = (data: IformInput) => {
     console.log("Data", data);
@@ -67,6 +111,74 @@ const EmployerSettingsForm = () => {
               />
             </div>
           </div>
+          {/* When you run const { control } = useForm(), you create a specific instance of a form. The <Controller /> component is isolated; it doesn't know which form it belongs to. Passing control={control} connects this specific input to that specific useForm hook. */}
+          {/* Organization Type and Team Size - Two columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Organization Type */}
+            <div className="space-y-2">
+              <Label htmlFor="organizationType">Organization Type *</Label>
+              <Controller
+                name="organizationType"
+                control={control}
+                render={({ field }) => (
+                  <div className="relative">
+                    <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="pl-10 w-full ">
+                        <SelectValue placeholder="Select organization type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {organizationTypeOptions.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {/* {capitalizeWords(type)} */}
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              />
+              {/* {errors.organizationType && (
+                <p className="text-sm text-destructive">
+                  {errors.organizationType.message}
+                </p>
+              )} */}
+            </div>
+
+            {/* Organization Type */}
+            <div className="space-y-2">
+              <Label htmlFor="teamSize">Team Size *</Label>
+              <Controller
+                name="teamSize"
+                control={control}
+                render={({ field }) => (
+                  <div className="relative">
+                    <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="pl-10 w-full ">
+                        <SelectValue placeholder="Select Team Size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {teamSizeOptions.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {/* {capitalizeWords(type)} */}
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              />
+              {/* {errors.teamSize && (
+                <p className="text-sm text-destructive">
+                  {errors.teamSize.message}
+                </p>
+              )} */}
+            </div>
+          </div>
+
           {/* Year of Establishment and Location - Two columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
