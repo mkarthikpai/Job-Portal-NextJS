@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { updateEmployerProfileAction } from "@/features/server/employer.action";
 import {
   Briefcase,
   Building2,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const organizationTypeOptions = [
   "development",
@@ -67,8 +69,14 @@ interface IformInput {
 const EmployerSettingsForm = () => {
   const { register, handleSubmit, control } = useForm<IformInput>();
 
-  const handleFormSubmit = (data: IformInput) => {
+  const handleFormSubmit = async (data: IformInput) => {
     console.log("Data", data);
+    const response = await updateEmployerProfileAction(data);
+    if (response.status === "SUCCESS") {
+      toast.success(response.message);
+    } else {
+      toast.error(response.message);
+    }
   };
 
   return (
