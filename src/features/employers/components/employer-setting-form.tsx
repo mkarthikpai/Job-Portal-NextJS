@@ -23,18 +23,25 @@ import {
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import {
+  EmployerProfileData,
+  employerProfileSchema,
+  organizationTypes,
+  teamSizes,
+} from "../employers.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const organizationTypeOptions = [
-  "development",
-  "business",
-  "design",
-  "android dev",
-  "cloud business",
-] as const;
-type OrganizationType = (typeof organizationTypeOptions)[number];
+// const organizationTypeOptions = [
+//   "development",
+//   "business",
+//   "design",
+//   "android dev",
+//   "cloud business",
+// ] as const;
+// type OrganizationType = (typeof organizationTypeOptions)[number];
 
-const teamSizeOptions = ["1-5", "6-20", "21-50"] as const;
-type TeamSize = (typeof teamSizeOptions)[number];
+// const teamSizeOptions = ["1-5", "6-20", "21-50"] as const;
+// type TeamSize = (typeof teamSizeOptions)[number];
 
 // Without as const, TypeScript thinks options is just a generic list of strings (string[]). With as const, TypeScript treats it as a Read-Only Tuple. It knows exactly that:
 
@@ -54,22 +61,29 @@ type TeamSize = (typeof teamSizeOptions)[number];
 
 // typeof Machine[number]: Describes anything that could possibly come out of that machine.
 
-interface IformInput {
-  username: string;
-  email: string;
-  name: string;
-  description: string;
-  yearOfEstablishment: string;
-  location: string;
-  websiteUrl: string;
-  organizationType: OrganizationType;
-  teamSize: TeamSize;
-}
+// interface IformInput {
+//   username: string;
+//   email: string;
+//   name: string;
+//   description: string;
+//   yearOfEstablishment: string;
+//   location: string;
+//   websiteUrl: string;
+//   organizationType: OrganizationType;
+//   teamSize: TeamSize;
+// }
 
 const EmployerSettingsForm = () => {
-  const { register, handleSubmit, control } = useForm<IformInput>();
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<EmployerProfileData>({
+    resolver: zodResolver(employerProfileSchema),
+  });
 
-  const handleFormSubmit = async (data: IformInput) => {
+  const handleFormSubmit = async (data: EmployerProfileData) => {
     console.log("Data", data);
     const response = await updateEmployerProfileAction(data);
     if (response.status === "SUCCESS") {
@@ -101,10 +115,13 @@ const EmployerSettingsForm = () => {
                 id="companyName"
                 type="text"
                 placeholder="Enter company name"
-                className="pl-10"
+                className={`pl-10 ${errors.name ? "border-destructive" : ""}`}
                 {...register("name")}
               />
             </div>
+            {errors.name && (
+              <p className="text-sm text-destructive">{errors.name.message}</p>
+            )}
           </div>
           {/* Description */}
           <div className="space-y-2">
@@ -114,10 +131,17 @@ const EmployerSettingsForm = () => {
               <Textarea
                 id="description"
                 placeholder="Tell us about your company, what you do, and your mission..."
-                className="pl-10 min-h-[120px] resize-none "
+                className={`min-h-[120px] resize-none pl-10 ${
+                  errors.name ? "border-destructive" : ""
+                }`}
                 {...register("description")}
               />
             </div>
+            {errors.description && (
+              <p className="text-sm text-destructive">
+                {errors.description.message}
+              </p>
+            )}
           </div>
           {/* When you run const { control } = useForm(), you create a specific instance of a form. The <Controller /> component is isolated; it doesn't know which form it belongs to. Passing control={control} connects this specific input to that specific useForm hook. */}
           {/* Organization Type and Team Size - Two columns */}
@@ -129,14 +153,14 @@ const EmployerSettingsForm = () => {
                 name="organizationType"
                 control={control}
                 render={({ field }) => (
-                  <div className="relative">
+                  <div className={`relative `}>
                     <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="pl-10 w-full ">
                         <SelectValue placeholder="Select organization type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {organizationTypeOptions.map((type) => (
+                        {organizationTypes?.map((type) => (
                           <SelectItem key={type} value={type}>
                             {/* {capitalizeWords(type)} */}
                             {type}
@@ -147,14 +171,14 @@ const EmployerSettingsForm = () => {
                   </div>
                 )}
               />
-              {/* {errors.organizationType && (
+              {errors.organizationType && (
                 <p className="text-sm text-destructive">
                   {errors.organizationType.message}
                 </p>
-              )} */}
+              )}
             </div>
 
-            {/* Organization Type */}
+            {/* Team Type */}
             <div className="space-y-2">
               <Label htmlFor="teamSize">Team Size *</Label>
               <Controller
@@ -168,7 +192,7 @@ const EmployerSettingsForm = () => {
                         <SelectValue placeholder="Select Team Size" />
                       </SelectTrigger>
                       <SelectContent>
-                        {teamSizeOptions.map((type) => (
+                        {teamSizes?.map((type) => (
                           <SelectItem key={type} value={type}>
                             {/* {capitalizeWords(type)} */}
                             {type}
@@ -179,11 +203,11 @@ const EmployerSettingsForm = () => {
                   </div>
                 )}
               />
-              {/* {errors.teamSize && (
+              {errors.teamSize && (
                 <p className="text-sm text-destructive">
                   {errors.teamSize.message}
                 </p>
-              )} */}
+              )}
             </div>
           </div>
 
@@ -200,10 +224,15 @@ const EmployerSettingsForm = () => {
                   type="text"
                   placeholder="e.g., 2020"
                   maxLength={4}
-                  className="pl-10"
+                  className={`pl-10 ${errors.name ? "border-destructive" : ""}`}
                   {...register("yearOfEstablishment")}
                 />
               </div>
+              {errors.yearOfEstablishment && (
+                <p className="text-sm text-destructive">
+                  {errors.yearOfEstablishment.message}
+                </p>
+              )}
             </div>
 
             {/* Year of Establishment and Location - Two columns */}
@@ -216,12 +245,18 @@ const EmployerSettingsForm = () => {
                   id="location"
                   type="text"
                   placeholder="e.g., Pune, Bangalore"
-                  className="pl-10"
+                  className={`pl-10 ${errors.name ? "border-destructive" : ""}`}
                   {...register("location")}
                 />
               </div>
+              {errors.location && (
+                <p className="text-sm text-destructive">
+                  {errors.location.message}
+                </p>
+              )}
             </div>
           </div>
+
           {/* Website URL */}
           <div className="space-y-2">
             <Label htmlFor="websiteUrl">Website URL (Optional)</Label>
@@ -231,10 +266,15 @@ const EmployerSettingsForm = () => {
                 id="websiteUrl"
                 type="text"
                 placeholder="https://www.yourcompany.com"
-                className="pl-10"
+                className={`pl-10 ${errors.name ? "border-destructive" : ""}`}
                 {...register("websiteUrl")}
               />
             </div>
+            {errors.websiteUrl && (
+              <p className="text-sm text-destructive">
+                {errors.websiteUrl.message}
+              </p>
+            )}
           </div>
           <Button type="submit">Save Changes</Button>
         </form>
