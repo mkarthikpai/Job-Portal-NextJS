@@ -18,6 +18,7 @@ import {
   Calendar,
   FileText,
   Globe,
+  Loader,
   MapPin,
 } from "lucide-react";
 import React from "react";
@@ -73,13 +74,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 //   teamSize: TeamSize;
 // }
 
-const EmployerSettingsForm = () => {
+interface Props {
+  initialData?: Partial<EmployerProfileData>; //Key: Type
+}
+
+const EmployerSettingsForm = ({ initialData }: Props) => {
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isDirty, isSubmitting },
   } = useForm<EmployerProfileData>({
+    defaultValues: {
+      name: initialData?.name || "",
+      description: initialData?.description || "",
+      organizationType: initialData?.organizationType || undefined,
+      teamSize: initialData?.teamSize || undefined,
+      yearOfEstablishment: initialData?.yearOfEstablishment,
+      websiteUrl: initialData?.websiteUrl || "",
+      location: initialData?.location || "",
+    },
     resolver: zodResolver(employerProfileSchema),
   });
 
@@ -276,7 +290,15 @@ const EmployerSettingsForm = () => {
               </p>
             )}
           </div>
-          <Button type="submit">Save Changes</Button>
+          <div className="flex items-center gap-4 pt-4">
+            <Button type="submit">
+              {isSubmitting && <Loader className="w-4 h-4 animate-spin" />}
+              {isSubmitting ? "SavingChanges..." : "Save Change"}
+            </Button>
+            {!isDirty && (
+              <p className="text-sm text-muted-foreground">No Change To Save</p>
+            )}
+          </div>
         </form>
       </CardContent>
     </Card>
