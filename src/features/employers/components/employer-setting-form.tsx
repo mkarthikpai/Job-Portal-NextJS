@@ -32,6 +32,7 @@ import {
 } from "../employers.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Tiptap from "@/components/text-editor";
+import { UploadButton } from "@/lib/uploadthing";
 
 // const organizationTypeOptions = [
 //   "development",
@@ -120,6 +121,21 @@ const EmployerSettingsForm = ({ initialData }: Props) => {
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="text" {...register("email")} />
           </div> */}
+
+          <div>
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                // Do something with the response
+                console.log("Files: ", res);
+                alert("Upload Completed");
+              }}
+              onUploadError={(error: Error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+            />
+          </div>
 
           {/* Company Name */}
           <div className="space-y-2">
